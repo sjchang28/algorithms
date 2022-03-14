@@ -23,7 +23,7 @@ def insertionSort(arr): # https://www.geeksforgeeks.org/insertion-sort/
 			arr[j+1] = arr[j]
 			j -= 1
 		arr[j+1] = key
-def plotGraph(folderName,runTimes):
+def plotGraph(dataset,runTimes):
 	folderSize = sorted(runTimes.keys())
 	runTimeComplexity = [runTimes[key] for key in runTimes]
 
@@ -32,28 +32,27 @@ def plotGraph(folderName,runTimes):
 	xlabel("File Size (lines)")
 	ylabel("Run Time (s)")
 	title("Run Time Complexity")
-	savefig("Run Time Complexity For Insertion Sort on Dataset "+folderName)
+	savefig("Run Time Complexity For Insertion Sort on Dataset "+dataset)
 	
-def sortData(folderName,repeatValue=5):
-	for dataset in ["A","B","C"]: # ** replace folderName with dataset
-		runTimes = dict()
-		for file in glob(dataset+"**/*.gz"):
-			print("File "+file)
-			for i in range(repeatValue):
-				with open(file,"rt",encoding="latin-1") as f:
-					arr = findall(r"2015.*\n",f.read())
+def sortData(dataset,repeatValue=5):
+	runTimes = dict()
+	for file in glob(dataset+"**/*.gz"):
+		print("File "+file)
+		for i in range(repeatValue):
+			with open(file,"rt",encoding="latin-1") as f:
+				arr = findall(r"2015.*\n",f.read())
 
-					# Driver Function for Insertion Sort + Timings
-					startTime = process_time()
-					insertionSort(arr)
-					endTime = process_time()
+				# Driver Function for Insertion Sort + Timings
+				startTime = process_time()
+				insertionSort(arr)
+				endTime = process_time()
 
-					totalTime = endTime - startTime
-					print("+ ("+str(i+1)+"/"+str(repeatValue)+") "+str(totalTime))
-					runTimes[len(arr)] = (runTimes[len(arr)] + totalTime) if len(arr) in runTimes.keys() else totalTime
-		for key in runTimes.keys():
-			runTimes[key] /= repeatValue
-		plotGraph(dataset,runTimes)
+				totalTime = endTime - startTime
+				print("+ ("+str(i+1)+"/"+str(repeatValue)+") "+str(totalTime))
+				runTimes[len(arr)] = (runTimes[len(arr)] + totalTime) if len(arr) in runTimes.keys() else totalTime
+	for key in runTimes.keys():
+		runTimes[key] /= repeatValue
+	plotGraph(dataset,runTimes)
 if __name__ == "__main__":
 	# python3 insertionsort.py A 5
 	sortData(argv[1],int(argv[2]))
