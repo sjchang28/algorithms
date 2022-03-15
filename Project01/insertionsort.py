@@ -28,7 +28,6 @@ def plotGraph(dataset,runTimes):
 	title("Run Time Complexity")
 	savefig("./Run Time Complexity/Run Time Complexity For Insertion Sort on Dataset "+dataset)
 	clf()
-	return folderSize
 
 # https://www.geeksforgeeks.org/insertion-sort/
 def insertionSort(arr):
@@ -56,14 +55,15 @@ def sortData(datase,repeatValue=5):
 					totalTime = endTime - startTime
 					print("+ ("+str(i+1)+"/"+str(repeatValue)+") "+str(totalTime))
 					runTimes[len(arr)] = (runTimes[len(arr)] + totalTime) if len(arr) in runTimes.keys() else totalTime
-		for key in runTimes.keys():
 			runTimes[key] /= repeatValue
-		orderedKeys = plotGraph(dataset,runTimes)
-		with open("./Run Time Complexity/logs/runtimes_"+dataset+".bin","wb+") as f:
-			for key in orderedKeys:
-				req = str(key)+","+str(runTimes[key])+"\n"
-				res = bytes(req,'utf-8')
-				f.write(res)
+			orderedKeys = sorted(runTimes.keys())
+			with open("./Run Time Complexity/logs/runtimes_"+dataset+".bin","ab+") as f:
+				for key in orderedKeys:
+					req = str(key)+","+str(runTimes[key])+","+dt.now.strftime("%Y-%m-%dT%H:%M:%S%z")+"\n"
+					res = bytes(req,'utf-8')
+					f.write(res)
+		plotGraph(dataset,runTimes)
+
 if __name__ == "__main__":
 	# python3 insertionsort.py A 5
 	sortData(argv[1],int(argv[2]))
