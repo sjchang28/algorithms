@@ -41,7 +41,8 @@ def insertionSort(arr):
 def sortData(datase,repeatValue=5):
 	for dataset in ["A","B","C"]:
 		runTimes = dict()
-		for file in glob(dataset+"**/*.gz"):
+		arr = list()
+		for file in sorted(glob(dataset+"**/*.gz")):
 			print("File "+file)
 			for i in range(repeatValue):
 				with open(file,"rt",encoding="latin-1") as f:
@@ -55,11 +56,11 @@ def sortData(datase,repeatValue=5):
 					totalTime = endTime - startTime
 					print("+ ("+str(i+1)+"/"+str(repeatValue)+") "+str(totalTime))
 					runTimes[len(arr)] = (runTimes[len(arr)] + totalTime) if len(arr) in runTimes.keys() else totalTime
-			runTimes[key] /= repeatValue
+			runTimes[len(arr)] /= repeatValue
 			orderedKeys = sorted(runTimes.keys())
 			with open("./Run Time Complexity/logs/runtimes_"+dataset+".bin","ab+") as f:
 				for key in orderedKeys:
-					req = str(key)+","+str(runTimes[key])+","+dt.now.strftime("%Y-%m-%dT%H:%M:%S%z")+"\n"
+					req = str(key)+","+str(runTimes[key])+","+dt.now().strftime("%Y-%m-%dT%H:%M:%S%z")+"\n"
 					res = bytes(req,'utf-8')
 					f.write(res)
 		plotGraph(dataset,runTimes)
