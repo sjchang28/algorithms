@@ -71,7 +71,7 @@ def validateSort(unsortedKeyList,keyList): # Validate Sort
         exit()
 def plotGraph(dataset,runTimes):
     folderSize = sorted(runTimes[RUN_TIME].keys())
-    runTimeComplexity = [runTimes[key] for key in folderSize]
+    runTimeComplexity = [runTimes[RUN_TIME][key] for key in folderSize]
 
     scatter(folderSize,runTimeComplexity)
     plot(folderSize,runTimeComplexity)
