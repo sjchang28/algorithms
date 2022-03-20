@@ -173,7 +173,7 @@ def sortData(dataset,repeatValue=5):
                 exit()
 
             totalSortTime = endSortTime - startSortTime
-            print("  ("+str(i+1)+"/"+str(repeatValue)+")     TT:{:.5f}s".format(totalDataTime+totalSortTime)+"  [LDT:{:.5f}s".format(totalDataTime)+" + SDT:{:.5f}s]".format(totalSortTime))
+            print("  ("+str(i+1)+"/"+str(repeatValue)+")     TT:{:.5f}s".format(totalDataTime+totalSortTime)+" [LDT:{:.5f}s".format(totalDataTime)+" + SDT:{:.5f}s]".format(totalSortTime))
             runTimes[lineNums] = (runTimes[lineNums] + totalSortTime) if lineNums in runTimes.keys() else totalSortTime
         runTimes[lineNums] /= repeatValue
     plotGraph(dataset,runTimes)
