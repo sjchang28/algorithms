@@ -1,7 +1,7 @@
 # Python3 program to perform basic timSort
 
 MIN_MERGE = 32
-DEFAULT_FOLDER = "./timeconv/timsort/"
+DEFAULT_FOLDER = "./out/timsort/"
 DEFAULT_SDFOLDER = DEFAULT_FOLDER+"sorted_data/"
 DEFAULT_RCFOLDER = DEFAULT_FOLDER+"Run Time Complexity/"
 

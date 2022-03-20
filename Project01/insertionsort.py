@@ -1,6 +1,6 @@
 # Python3 program to perform basic insertionSort
 
-DEFAULT_FOLDER = "./timeconv/insertionsort/"
+DEFAULT_FOLDER = "./out/insertionsort/"
 DEFAULT_SDFOLDER = DEFAULT_FOLDER+"sorted_data/"
 DEFAULT_RCFOLDER = DEFAULT_FOLDER+"Run Time Complexity/"
 

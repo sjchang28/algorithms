@@ -1,6 +1,6 @@
 # Python3 program to perform basic mergeSort
 
-DEFAULT_FOLDER = "./timeconv/mergesort/"
+DEFAULT_FOLDER = "./out/mergesort/"
 DEFAULT_SDFOLDER = DEFAULT_FOLDER+"sorted_data/"
 DEFAULT_RCFOLDER = DEFAULT_FOLDER+"Run Time Complexity/"
 
