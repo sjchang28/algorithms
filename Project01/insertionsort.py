@@ -112,12 +112,12 @@ def insertionSort(arr):
             j -= 1
         arr[j+1] = key
     return arr
-def sortData(dataset,repeatValue=5):
+def sortData(dataset,repeatValue=10):
     print("LDT:Loading Data Time | SDT:Sorting Data Time")
     runTimes = [{},{}]
     for file in glob(DATASET_FOLDER+dataset+"**/*.gz"):
         print(SORTINGMODE+"::File "+file)
-        for i in range(repeatValue):
+        for i in range(repeatValue + 5): # repeat value (5-10) + warm-ups (5)
             lineNums = 0
             startLoadTime,endLoadTime,totalLoadTime = 0,0,0
             startSortTime,endSortTime,totalSortTime = 0,0,0
@@ -137,9 +137,10 @@ def sortData(dataset,repeatValue=5):
             totalSortTime = endSortTime - startSortTime
 
             validateSort(unsortedKeyList,keyList)
-            print("  ("+str(i+1)+"/"+str(repeatValue)+").....{:.5f}s".format(totalLoadTime+totalSortTime)+" [LDT:{:.5f}s".format(totalLoadTime)+" + SDT:{:.5f}s]".format(totalSortTime))
-            runTimes[LOAD_TIME][lineNums] = (runTimes[LOAD_TIME][lineNums] + totalLoadTime) if lineNums in runTimes[LOAD_TIME].keys() else totalLoadTime
-            runTimes[RUN_TIME][lineNums] = (runTimes[RUN_TIME][lineNums] + totalSortTime) if lineNums in runTimes[RUN_TIME].keys() else totalSortTime
+            if i >= 5:
+                print("  ("+str(i-4)+"/"+str(repeatValue)+").....{:.5f}s".format(totalLoadTime+totalSortTime)+" [LDT:{:.5f}s".format(totalLoadTime)+" + SDT:{:.5f}s]".format(totalSortTime))
+                runTimes[LOAD_TIME][lineNums] = (runTimes[LOAD_TIME][lineNums] + totalLoadTime) if lineNums in runTimes[LOAD_TIME].keys() else totalLoadTime
+                runTimes[RUN_TIME][lineNums] = (runTimes[RUN_TIME][lineNums] + totalSortTime) if lineNums in runTimes[RUN_TIME].keys() else totalSortTime
         runTimes[LOAD_TIME][lineNums] /= repeatValue
         runTimes[RUN_TIME][lineNums] /= repeatValue
     plotGraph(dataset,runTimes)
