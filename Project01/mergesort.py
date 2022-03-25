@@ -83,12 +83,12 @@ def validateSort(unsortedKeyList,keyList): # Validate Sort
         exit()
 def plotGraph(dataset,runTimes):
     folderSize = sorted(runTimes[SORTTIME].keys())
-    runTimeComplexity = [(runTimes[SORTTIME][key] + runTimes[WRITETIME][key]) for key in folderSize]
+    runTimeComplexity = [((runTimes[SORTTIME][key] + runTimes[WRITETIME][key]) * 1000) for key in folderSize]
 
     scatter(folderSize,runTimeComplexity)
     plot(folderSize,runTimeComplexity)
     xlabel("File Size (lines)")
-    ylabel("Run Time (s)")
+    ylabel("Run Time (ms)")
     title("Run Time Complexity")
     savefig(DEFAULT_RCFOLDER+"Run Time Complexity for "+SORTINGMODE+" on Dataset "+dataset)
     clf()
