@@ -146,7 +146,10 @@ def sortData(dataset,repeatValue=10):
 
             validateSort(unsortedKeyList,keyList)
             if i >= WARMUP_VALUE:
-                print("  ("+str(i-(WARMUP_VALUE-1))+"/"+str(repeatValue)+").....{:.5f}s".format(totalLoadTime)+"   {:.5f}s".format(totalSortTime)+"   {:.5f}s".format(totalWriteTime)+"   {:.5f}s".format(totalLoadTime+totalSortTime+totalWriteTime))
+                if i >= 10:
+                    print("  ("+str(i-(WARMUP_VALUE-1))+"/"+str(repeatValue)+")....{:.5f}s".format(totalLoadTime)+"   {:.5f}s".format(totalSortTime)+"   {:.5f}s".format(totalWriteTime)+"   {:.5f}s".format(totalLoadTime+totalSortTime+totalWriteTime))
+                else:
+                    print("  ("+str(i-(WARMUP_VALUE-1))+"/"+str(repeatValue)+").....{:.5f}s".format(totalLoadTime)+"   {:.5f}s".format(totalSortTime)+"   {:.5f}s".format(totalWriteTime)+"   {:.5f}s".format(totalLoadTime+totalSortTime+totalWriteTime))
                 runTimes[LOADTIME][len(keyList)] = (runTimes[LOADTIME][len(keyList)] + totalLoadTime) if len(keyList) in runTimes[LOADTIME].keys() else totalLoadTime
                 runTimes[SORTTIME][len(keyList)] = (runTimes[SORTTIME][len(keyList)] + totalSortTime) if len(keyList) in runTimes[SORTTIME].keys() else totalSortTime
                 runTimes[WRITETIME][len(keyList)] = (runTimes[WRITETIME][len(keyList)] + totalWriteTime) if len(keyList) in runTimes[WRITETIME].keys() else totalWriteTime
