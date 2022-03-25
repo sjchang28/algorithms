@@ -42,8 +42,7 @@ def timestamp_ms(utc_time):
 def convert2time(line):
     dateString = line.split(' ')[0]
     dateString = dateString[:-3] + dateString[-2:]
-    dateTime = dt.strptime(dateString,'%Y-%m-%dT%H:%M:%S%z')
-    return dateTime
+    return dt.strptime(dateString,'%Y-%m-%dT%H:%M:%S%z')
 def getData(filename):
     keyList = []
     dataMap = {}
