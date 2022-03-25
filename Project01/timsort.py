@@ -100,7 +100,7 @@ def writeSortingData2File(dataset,lineNums,runTimes): # Save sorting data of eac
         byteheader = bytes(plainheader,"utf-8")
         f.write(byteheader)
         for key in orderedKeys:
-            plaintext = str(lineNums)+","+str(key)+","+str(runTimes[LOADTIME][key])+"," +str(runTimes[SORTTIME][key])+","+str(runTimes[WRITETIME][key])+","+str(runTimes[LOADTIME][key]+runTimes[SORTTIME][key])+","+dt.now().strftime("%Y-%m-%dT%H:%M:%S%z")+"\n"
+            plaintext = str(lineNums)+","+str(key)+","+str(runTimes[LOADTIME][key])+"," +str(runTimes[SORTTIME][key])+","+str(runTimes[WRITETIME][key])+","+str(runTimes[LOADTIME][key]+runTimes[SORTTIME][key]+runTimes[WRITETIME][key])+","+dt.now().strftime("%Y-%m-%dT%H:%M:%S%z")+"\n"
             bytetext = bytes(plaintext,"utf-8")
             f.write(bytetext)
 
