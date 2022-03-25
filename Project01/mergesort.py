@@ -154,7 +154,6 @@ def sortData(dataset,repeatValue=10):
             # Driver Function for MergeSort
             startSortTime = process_time()
             mergeSort(arr=keyList)
-            writeSorts2File(filename=DEFAULT_SDFOLDER+file,keyList=keyList,dataMap=dataMap)
             endSortTime = process_time()
             totalSortTime = endSortTime - startSortTime
 
