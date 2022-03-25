@@ -5,12 +5,14 @@
 MIN_MERGE = 32
 SORTINGMODE = "TimSort"
 DATASET_FOLDER = "./datasets/"
-DEFAULT_FOLDER = "./analysis/loadout/timsort/"
+DEFAULT_FOLDER = "./analysis/timsort/"
 DEFAULT_SDFOLDER = DEFAULT_FOLDER+"sorted_data/"
-DEFAULT_RCFOLDER = DEFAULT_FOLDER+"Run Time Complexity/"
+DEFAULT_RCFOLDER = DEFAULT_FOLDER+"runtime_complexity/"
+WARMUP_VALUE = 5
 
-LOAD_TIME = 0
-RUN_TIME = 1
+LOADTIME = 0
+SORTTIME = 1
+WRITETIME = 2
 
 import os, errno
 from sys import argv, exit
@@ -36,12 +38,12 @@ def timestamp_ms(utc_time):
     if epoch.tzinfo != utc_time.tzinfo:
         updateEpochTz(utc_time)
     td = (utc_time - epoch) / tdSeconds
-    return int(td) #(td.days * 86400 + td.seconds) * 10**6 + td.microseconds
+    return int(td) # (td.days * 86400 + td.seconds) * 10**6 + td.microseconds
 def convert2time(line):
     dateString = line.split(' ')[0]
     dateString = dateString[:-3] + dateString[-2:]
-    utc_time = dt.strptime(dateString,'%Y-%m-%dT%H:%M:%S%z')
-    return timestamp_ms(utc_time=utc_time)
+    dateTime = dt.strptime(dateString,'%Y-%m-%dT%H:%M:%S%z')
+    return dateTime
 def getData(filename):
     keyList = []
     dataMap = {}
@@ -64,22 +66,6 @@ def getData(filename):
 
 
 ''' ------------------------- Post-Process Functions ------------------------- '''
-def validateSort(unsortedKeyList,keyList): # Validate Sort
-    sortedKeyList = sorted(unsortedKeyList)
-    if sortedKeyList != keyList:
-        print("  ✘ Invalid "+SORTINGMODE)
-        exit()
-def plotGraph(dataset,runTimes):
-    folderSize = sorted(runTimes[RUN_TIME].keys())
-    runTimeComplexity = [runTimes[RUN_TIME][key] for key in folderSize]
-
-    scatter(folderSize,runTimeComplexity)
-    plot(folderSize,runTimeComplexity)
-    xlabel("File Size (lines)")
-    ylabel("Run Time (s)")
-    title("Run Time Complexity")
-    savefig(DEFAULT_RCFOLDER+"Run Time Complexity for "+SORTINGMODE+" on Dataset "+dataset)
-    clf()
 def writeSorts2File(filename,keyList,dataMap): # Write sorted file from unsorted data
     outDirectory = os.path.dirname(filename)
     try:
@@ -91,19 +77,36 @@ def writeSorts2File(filename,keyList,dataMap): # Write sorted file from unsorted
         for i in range(0,len(keyList)):
             for line in dataMap[keyList[i]]:
                 fout.write(line)
-def writeSortingData2File(dataset,runTimes): # Save sorting data of each file
-    orderedKeys = sorted(runTimes[LOAD_TIME].keys())
+def validateSort(unsortedKeyList,keyList): # Validate Sort
+    sortedKeyList = sorted(unsortedKeyList)
+    if sortedKeyList != keyList:
+        print("  ✘ Invalid "+SORTINGMODE)
+        exit()
+def plotGraph(dataset,runTimes):
+    folderSize = sorted(runTimes[SORTTIME].keys())
+    runTimeComplexity = [(runTimes[SORTTIME][key] + runTimes[WRITETIME][key]) for key in folderSize]
+
+    scatter(folderSize,runTimeComplexity)
+    plot(folderSize,runTimeComplexity)
+    xlabel("File Size (lines)")
+    ylabel("Run Time (s)")
+    title("Run Time Complexity")
+    savefig(DEFAULT_RCFOLDER+"Run Time Complexity for "+SORTINGMODE+" on Dataset "+dataset)
+    clf()
+def writeSortingData2File(dataset,lineNums,runTimes): # Save sorting data of each file
+    orderedKeys = sorted(runTimes[LOADTIME].keys())
     with open(DEFAULT_RCFOLDER+"logs/runtimes_"+dataset+".bin","wb+") as f:
-        plainheader = "Total Lines,Load Times, Sort Times,Total Time,Date+Time\n"
+        plainheader = "Total Lines,Unique Times,Load Time,Sort Time,Write Time,Total Time,Date+Time\n"
         byteheader = bytes(plainheader,"utf-8")
         f.write(byteheader)
         for key in orderedKeys:
-            plaintext = str(key)+","+str(runTimes[LOAD_TIME][key])+"," +str(runTimes[RUN_TIME][key])+","+str(runTimes[LOAD_TIME][key]+runTimes[RUN_TIME][key])+","+dt.now().strftime("%Y-%m-%dT%H:%M:%S%z")+"\n"
+            plaintext = str(lineNums)+","+str(key)+","+str(runTimes[LOADTIME][key])+"," +str(runTimes[SORTTIME][key])+","+str(runTimes[WRITETIME][key])+","+str(runTimes[LOADTIME][key]+runTimes[SORTTIME][key])+","+dt.now().strftime("%Y-%m-%dT%H:%M:%S%z")+"\n"
             bytetext = bytes(plaintext,"utf-8")
             f.write(bytetext)
 
 
 ''' ------------------------- Driving Sort Functions ------------------------- '''
+# TimSort | https://www.geeksforgeeks.org/timsort/
 def calcMinRun(n):
 	r = 0
 	while n >= MIN_MERGE:
@@ -160,15 +163,16 @@ def timSort(arr):
 		size = 2 * size
 	return arr
 def sortData(dataset,repeatValue=10):
-    print("LDT:Loading Data Time | SDT:Sorting Data Time")
-    runTimes = [{},{}]
+    print("LDT:Loading Data Time | SDT:Sorting Data Time | WDT:Writing Data Time")
+    runTimes = [{},{},{}]
     for file in glob(DATASET_FOLDER+dataset+"**/*.gz"):
         print(SORTINGMODE+"::File "+file)
-        for i in range(repeatValue + 5): # repeat value (5-10) + warm-ups (5)
+        for i in range(repeatValue + WARMUP_VALUE): # Repeat Value (5-10) + Warm-Ups (5)
             lineNums = 0
             startLoadTime,endLoadTime,totalLoadTime = 0,0,0
             startSortTime,endSortTime,totalSortTime = 0,0,0
-            
+            startWriteTime,endWriteTime,totalWriteTime = 0,0,0
+
             # Read in Data + Convert Time to Int
             startLoadTime = process_time()
             keyList,dataMap,lineNums = getData(file)
@@ -183,15 +187,24 @@ def sortData(dataset,repeatValue=10):
             endSortTime = process_time()
             totalSortTime = endSortTime - startSortTime
 
+	    # Write Sorted Data
+            startWriteTime = process_time()
+            writeSorts2File(filename=DEFAULT_SDFOLDER+file,keyList=keyList,dataMap=dataMap)
+            endWriteTime = process_time()
+            totalWriteTime = endWriteTime - startWriteTime
+
             validateSort(unsortedKeyList,keyList)
-            if i >= 5:
-                print("  ("+str(i-4)+"/"+str(repeatValue)+").....{:.5f}s".format(totalLoadTime+totalSortTime)+" [LDT:{:.5f}s".format(totalLoadTime)+" + SDT:{:.5f}s]".format(totalSortTime))
-                runTimes[LOAD_TIME][lineNums] = (runTimes[LOAD_TIME][lineNums] + totalLoadTime) if lineNums in runTimes[LOAD_TIME].keys() else totalLoadTime
-                runTimes[RUN_TIME][lineNums] = (runTimes[RUN_TIME][lineNums] + totalSortTime) if lineNums in runTimes[RUN_TIME].keys() else totalSortTime
-        runTimes[LOAD_TIME][lineNums] /= repeatValue
-        runTimes[RUN_TIME][lineNums] /= repeatValue
+            if i >= WARMUP_VALUE:
+                print("  ("+str(i-(WARMUP_VALUE-1))+"/"+str(repeatValue)+").....{:.5f}s".format(totalSortTime+totalWriteTime)+"/{:.5f}s".format(totalLoadTime+totalSortTime+totalWriteTime)+" [LDT:{:.5f}s".format(totalLoadTime)+" + SDT:{:.5f}s + ".format(totalSortTime)+"WDT:{:.5f}s]".format(totalWriteTime))
+                runTimes[LOADTIME][len(keyList)] = (runTimes[LOADTIME][len(keyList)] + totalLoadTime) if len(keyList) in runTimes[LOADTIME].keys() else totalLoadTime
+                runTimes[SORTTIME][len(keyList)] = (runTimes[SORTTIME][len(keyList)] + totalSortTime) if len(keyList) in runTimes[SORTTIME].keys() else totalSortTime
+                runTimes[WRITETIME][len(keyList)] = (runTimes[WRITETIME][len(keyList)] + totalWriteTime) if len(keyList) in runTimes[WRITETIME].keys() else totalWriteTime
+
+        runTimes[LOADTIME][len(keyList)] /= repeatValue
+        runTimes[SORTTIME][len(keyList)] /= repeatValue
+        runTimes[WRITETIME][len(keyList)] /= repeatValue
     plotGraph(dataset,runTimes)
-    writeSortingData2File(dataset,runTimes)
+    writeSortingData2File(dataset,lineNums,runTimes)
 
 if __name__ == "__main__":
     # python3 timsort.py A 5
