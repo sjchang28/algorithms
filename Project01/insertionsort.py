@@ -147,7 +147,7 @@ def sortData(dataset, repeatValue=10):
             validateSort(unsortedKeyList, keyList)
             if i >= WARMUP_VALUE:
                 if (i + WARMUP_VALUE) >= 10:
-                    print("  ("+str(i-(WARMUP_VALUE-1))+"/"+str(repeatValue)+")....{:.5f}s".format(totalLoadTime)+"   {:.5f}s".format(totalSortTime)+"   {:.5f}s".format(totalWriteTime)+"   {:.5f}s".format(totalLoadTime+totalSortTime+totalWriteTime))
+                    print("  ("+str(i-(WARMUP_VALUE-1))+"/"+str(repeatValue)+")...{:.5f}s".format(totalLoadTime)+"   {:.5f}s".format(totalSortTime)+"   {:.5f}s".format(totalWriteTime)+"   {:.5f}s".format(totalLoadTime+totalSortTime+totalWriteTime))
                 else:
                     print("  ("+str(i-(WARMUP_VALUE-1))+"/"+str(repeatValue)+").....{:.5f}s".format(totalLoadTime)+"   {:.5f}s".format(totalSortTime)+"   {:.5f}s".format(totalWriteTime)+"   {:.5f}s".format(totalLoadTime+totalSortTime+totalWriteTime))
                 runTimes[LOADTIME][len(keyList)] = (runTimes[LOADTIME][len(keyList)] + totalLoadTime) if len(keyList) in runTimes[LOADTIME].keys() else totalLoadTime
