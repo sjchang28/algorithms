@@ -2,15 +2,19 @@
 **Run Time Complexity for (Insertion, Merge, & Tim Sort) on Different Datasets (Sorted, Reversed, & Random) [2 - 4Mil Lines]**
 
 ## Running Each Sort on a Specified Dataset with Iterations
-**Run InsertionSort on dataset A with FIVE (5) iterations per file**
+**Run All the Sorts (InsertionSort, MergeSort, and TimSort) on All Datasets**
+```
+python3 allsorts.py
+```
+**Run InsertionSort on Dataset A with TEN (10) Iterations per File**
 ```
 python3 insertionsort.py A 5
 ```
-**Run MergeSort on dataset B with FIVE (5) iterations per file**
+**Run MergeSort on Dataset B with TEN (10) Iterations per File**
 ```
 python3 mergesort.py B 5
 ```
-**Run TimSort on dataset C with FIVE (5) iterations per file**
+**Run TimSort on Dataset C with TEN (10) Iterations per File**
 ```
 python3 timsort.py C 5
 ```
