@@ -27,20 +27,6 @@ import csv
 
 
 ''' -------------------------- Pre-Process Functions ------------------------- '''
-epoch = dt(1970, 1, 1)
-tdSeconds = timedelta(seconds=1)
-def updateEpochTz(utc_time):
-    global epoch
-    if epoch.tzinfo is None:
-        epoch = epoch.replace(tzinfo=utc_time.tzinfo)
-    else:
-        assert False
-def timestamp_ms(utc_time):
-    global epoch
-    if epoch.tzinfo != utc_time.tzinfo:
-        updateEpochTz(utc_time)
-    td = (utc_time - epoch) / tdSeconds
-    return int(td) 
 def convert2time(line):
     dateString = line.split(' ')[0]
     dateString = dateString[:-3] + dateString[-2:]
