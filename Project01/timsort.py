@@ -174,7 +174,7 @@ def sortData(dataset, repeatValue=10):
 
             # Write Sorted Data
             startWriteTime = process_time()
-            writeSorts2File(filename=DEFAULT_FOLDER+file,keyList=keyList, dataMap=dataMap)
+            writeSorts2File(filename=DEFAULT_FOLDER+file, keyList=keyList, dataMap=dataMap)
             endWriteTime = process_time()
             totalWriteTime = endWriteTime - startWriteTime
 
