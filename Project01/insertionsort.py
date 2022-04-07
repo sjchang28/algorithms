@@ -10,9 +10,10 @@ WARMUP_VALUE = 5
 
 # Index in Run Time Dictionary
 UNIQUEKEYS = 0
-LOADTIME = 1
-SORTTIME = 2
-WRITETIME = 3
+DATETIME = 1
+LOADTIME = 2
+SORTTIME = 3
+WRITETIME = 4
 
 import errno
 import os
@@ -27,10 +28,24 @@ import csv
 
 
 ''' -------------------------- Pre-Process Functions ------------------------- '''
+epoch = dt(1970, 1, 1)
+tdSeconds = timedelta(seconds=1)
+def updateEpochTz(utc_time):
+    global epoch
+    if epoch.tzinfo is None:
+        epoch = epoch.replace(tzinfo=utc_time.tzinfo)
+    else:
+        utc_time = utc_time.replace(tzinfo=epoch.tzinfo)
+def timestamp_ms(utc_time):
+    global epoch
+    if epoch.tzinfo != utc_time.tzinfo:
+        updateEpochTz(utc_time)
+    td = (utc_time - epoch) / tdSeconds
+    return int(td) 
 def convert2time(line):
     dateString = line.split(' ')[0]
     dateString = dateString[:-3] + dateString[-2:]
-    return dt.strptime(dateString, '%Y-%m-%dT%H:%M:%S%z')
+    return timestamp_ms(dt.strptime(dateString, '%Y-%m-%dT%H:%M:%S%z'))
 def getData(filename):
     keyList = []
     dataMap = {}
@@ -87,7 +102,7 @@ def writeSortingData2File(dataset, runtimes): # Save sorting data of each file
         writer = csv.writer(f)
         writer.writerow(["Total Lines","Unique Lines","Load Time","Sort Time","Write Time","Total Time","Sort+Write Time","Date+Time"])
         for key in orderedKeys:
-            writer.writerow([key,runtimes[UNIQUEKEYS][key],runtimes[LOADTIME][key],runtimes[SORTTIME][key],runtimes[WRITETIME][key],(runtimes[LOADTIME][key]+runtimes[SORTTIME][key]+runtimes[WRITETIME][key]),(runtimes[SORTTIME][key]+runtimes[WRITETIME][key]),dt.now().strftime("%Y-%m-%dT%H:%M:%S%z")])
+            writer.writerow([key,runtimes[UNIQUEKEYS][key],runtimes[LOADTIME][key],runtimes[SORTTIME][key],runtimes[WRITETIME][key],(runtimes[LOADTIME][key]+runtimes[SORTTIME][key]+runtimes[WRITETIME][key]),(runtimes[SORTTIME][key]+runtimes[WRITETIME][key]),runtimes[DATETIME][key]])
 
 
 ''' ------------------------- Driving Sort Functions ------------------------- '''
@@ -103,7 +118,7 @@ def insertionSort(arr):
     return arr
 def sortData(dataset, repeatValue=10):
     print("Progress.....TotalDataTime   LoadingDataTime   SortingDataTime   WritingDataTime")
-    runtimes = [{}, {}, {}, {}]
+    runtimes = [{}, {}, {}, {}, {}]
     for file in glob(DATASET_FOLDER+dataset+"**/*.gz"):
         print(SORTINGMODE+"::File "+file)
         for i in range(repeatValue + WARMUP_VALUE):  # Repeat Value (5-10) + Warm-Ups (5)
@@ -142,6 +157,7 @@ def sortData(dataset, repeatValue=10):
                 runtimes[WRITETIME][lineNums] = (runtimes[WRITETIME][lineNums] + totalWriteTime) if lineNums in runtimes[WRITETIME].keys() else totalWriteTime
 
         runtimes[UNIQUEKEYS][lineNums] = len(keyList)
+        runtimes[DATETIME][lineNums] = dt.now().strftime("%Y-%m-%dT%H:%M:%S%z")
         runtimes[LOADTIME][lineNums] /= repeatValue
         runtimes[SORTTIME][lineNums] /= repeatValue
         runtimes[WRITETIME][lineNums] /= repeatValue

@@ -1,5 +1,8 @@
 # Algorithms
 **Run Time Complexity for (Insertion, Merge, & Tim Sort) on Different Datasets (Sorted, Reversed, & Random) [2 - 4Mil Lines]**
+python3 --version
+	Python 3.10.0
+Install MatLab to Graph | python3 -m pip install matplotlib
 
 ## Running Each Sort on a Specified Dataset with Iterations
 **Run All the Sorts (InsertionSort, MergeSort, and TimSort) on All Datasets**

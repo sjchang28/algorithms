@@ -1,12 +1,12 @@
-from insertionsort import sortData as ISD
-from mergesort import sortData as MSD
-from timsort import sortData as TSD
+from insertionsort import sortData as insertionsort
+from mergesort import sortData as mergesort
+from timsort import sortData as timsort
 
 def allSorts(repeatValue=10):
 	for dataset in ["A","B","C"]:
-		ISD(dataset=dataset,repeatValue=repeatValue)
-		MSD(dataset=dataset,repeatValue=repeatValue)
-		TSD(dataset=dataset,repeatValue=repeatValue)
+		insertionsort(dataset=dataset,repeatValue=repeatValue)
+		mergesort(dataset=dataset,repeatValue=repeatValue)
+		timsort(dataset=dataset,repeatValue=repeatValue)
 
 if __name__ == "__main__":
 	allSorts()
